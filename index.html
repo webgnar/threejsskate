@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3JS Skater</title>
+  <style>
+    body { margin: 0; }
+    canvas { display: block; }
+    .ui-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    .title {
+      font-size: 4em;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px #00ff00;
+    }
+    .button {
+      padding: 15px 30px;
+      font-size: 1.5em;
+      background: #00ff00;
+      border: none;
+      border-radius: 5px;
+      color: black;
+      cursor: pointer;
+      transition: transform 0.1s;
+      margin: 10px;
+    }
+    .button:hover {
+      transform: scale(1.1);
+    }
+    .score {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 1.5em;
+      color: white;
+    }
+    .hidden {
+      display: none;
+    }
+    .leaderboard {
+      background: rgba(0, 0, 0, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px;
+      min-width: 300px;
+    }
+    .leaderboard-title {
+      font-size: 2em;
+      margin-bottom: 15px;
+      color: #00ff00;
+    }
+    .high-scores {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .high-scores li {
+      font-size: 1.2em;
+      margin: 5px 0;
+      padding: 5px;
+      background: rgba(0, 255, 0, 0.1);
+      border-radius: 3px;
+    }
+    .initials-input {
+      font-size: 1.5em;
+      padding: 10px;
+      width: 100px;
+      text-align: center;
+      margin: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      border-radius: 5px;
+      text-transform: uppercase;
+    }
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .secondary-button {
+      background: #008800;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <div id="titleScreen" class="ui-screen">
+    <h1 class="title">3JS SKATER</h1>
+    <div class="button-container">
+      <button id="startButton" class="button">START GAME</button>
+      <button id="viewLeaderboardButton" class="button secondary-button">VIEW LEADERBOARD</button>
+    </div>
+  </div>
+
+  <div id="leaderboardScreen" class="ui-screen hidden">
+    <div class="leaderboard">
+      <div class="leaderboard-title">HIGH SCORES</div>
+      <ul id="highScoresList" class="high-scores">
+      </ul>
+    </div>
+    <button id="backToMenuButton" class="button secondary-button">BACK TO MENU</button>
+  </div>
+
+  <div id="gameOverScreen" class="ui-screen hidden">
+    <h1 class="title">GAME OVER</h1>
+    <div id="finalScore" style="font-size: 2em; margin-bottom: 20px;">Score: 0</div>
+    <div id="newHighScore" class="hidden">
+      <p style="font-size: 1.5em; color: #00ff00;">NEW HIGH SCORE!</p>
+      <input type="text" id="initialsInput" class="initials-input" maxlength="3" placeholder="AAA">
+      <button id="submitScore" class="button">SUBMIT</button>
+    </div>
+    <div class="button-container">
+      <button id="restartButton" class="button">PLAY AGAIN</button>
+      <button id="gameOverLeaderboardButton" class="button secondary-button">VIEW LEADERBOARD</button>
+    </div>
+  </div>
+
+  <div id="scoreDisplay" class="score">Score: 0</div>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
