@@ -1,20 +1,21 @@
 {
-  "name": "threejs-game",
+  "name": "threejsskate",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "3D Skateboarding Game",
+  "main": "src/main.js",
+  "type": "module",
   "scripts": {
-    "start": "vite",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "three": "^0.174.0",
-    "@types/three": "^0.174.0"
+    "three": "^0.162.0"
   },
   "devDependencies": {
-    "vite": "^6.2.1"
+    "vite": "^5.1.4"
   }
 }

@@ -3,133 +3,89 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3JS Skater</title>
+  <title>Skate Game</title>
   <style>
-    body { margin: 0; }
-    canvas { display: block; }
-    .ui-screen {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
+    body {
+      margin: 0;
+      overflow: hidden;
       font-family: Arial, sans-serif;
     }
-    .title {
-      font-size: 4em;
-      margin-bottom: 30px;
-      text-shadow: 0 0 10px #00ff00;
+    .hidden {
+      display: none !important;
     }
-    .button {
-      padding: 15px 30px;
-      font-size: 1.5em;
-      background: #00ff00;
-      border: none;
-      border-radius: 5px;
-      color: black;
-      cursor: pointer;
-      transition: transform 0.1s;
-      margin: 10px;
-    }
-    .button:hover {
-      transform: scale(1.1);
-    }
-    .score {
+    #scoreDisplay {
       position: absolute;
       top: 20px;
-      right: 20px;
-      font-size: 1.5em;
+      left: 20px;
       color: white;
+      font-size: 24px;
     }
-    .hidden {
-      display: none;
-    }
-    .leaderboard {
-      background: rgba(0, 0, 0, 0.9);
+    #titleScreen, #gameOverScreen, #leaderboardScreen {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.8);
       padding: 20px;
       border-radius: 10px;
-      margin: 20px;
-      min-width: 300px;
+      color: white;
+      text-align: center;
     }
-    .leaderboard-title {
-      font-size: 2em;
-      margin-bottom: 15px;
-      color: #00ff00;
+    button {
+      background: #4CAF50;
+      border: none;
+      padding: 10px 20px;
+      color: white;
+      font-size: 16px;
+      margin: 10px;
+      cursor: pointer;
+      border-radius: 5px;
     }
-    .high-scores {
+    button:hover {
+      background: #45a049;
+    }
+    #highScoresList {
       list-style: none;
       padding: 0;
-      margin: 0;
     }
-    .high-scores li {
-      font-size: 1.2em;
+    #highScoresList li {
       margin: 5px 0;
-      padding: 5px;
-      background: rgba(0, 255, 0, 0.1);
-      border-radius: 3px;
     }
-    .initials-input {
-      font-size: 1.5em;
-      padding: 10px;
+    #initialsInput {
+      font-size: 20px;
       width: 100px;
       text-align: center;
       margin: 10px;
-      background: rgba(255, 255, 255, 0.9);
-      border: none;
-      border-radius: 5px;
-      text-transform: uppercase;
-    }
-    .button-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-    .secondary-button {
-      background: #008800;
-      font-size: 1.2em;
     }
   </style>
 </head>
 <body>
-  <div id="titleScreen" class="ui-screen">
-    <h1 class="title">3JS SKATER</h1>
-    <div class="button-container">
-      <button id="startButton" class="button">START GAME</button>
-      <button id="viewLeaderboardButton" class="button secondary-button">VIEW LEADERBOARD</button>
-    </div>
+  <div id="scoreDisplay" class="hidden">Score: 0</div>
+  
+  <div id="titleScreen">
+    <h1>Skate Game</h1>
+    <button id="startButton">Start Game</button>
+    <button id="viewLeaderboardButton">View Leaderboard</button>
   </div>
-
-  <div id="leaderboardScreen" class="ui-screen hidden">
-    <div class="leaderboard">
-      <div class="leaderboard-title">HIGH SCORES</div>
-      <ul id="highScoresList" class="high-scores">
-      </ul>
-    </div>
-    <button id="backToMenuButton" class="button secondary-button">BACK TO MENU</button>
-  </div>
-
-  <div id="gameOverScreen" class="ui-screen hidden">
-    <h1 class="title">GAME OVER</h1>
-    <div id="finalScore" style="font-size: 2em; margin-bottom: 20px;">Score: 0</div>
+  
+  <div id="gameOverScreen" class="hidden">
+    <h2>Game Over</h2>
+    <div id="finalScore"></div>
     <div id="newHighScore" class="hidden">
-      <p style="font-size: 1.5em; color: #00ff00;">NEW HIGH SCORE!</p>
-      <input type="text" id="initialsInput" class="initials-input" maxlength="3" placeholder="AAA">
-      <button id="submitScore" class="button">SUBMIT</button>
+      <h3>New High Score!</h3>
+      <input type="text" id="initialsInput" maxlength="3" placeholder="AAA">
+      <button id="submitScore">Submit Score</button>
     </div>
-    <div class="button-container">
-      <button id="restartButton" class="button">PLAY AGAIN</button>
-      <button id="gameOverLeaderboardButton" class="button secondary-button">VIEW LEADERBOARD</button>
-    </div>
+    <button id="restartButton">Play Again</button>
+    <button id="gameOverLeaderboardButton">View Leaderboard</button>
+  </div>
+  
+  <div id="leaderboardScreen" class="hidden">
+    <h2>High Scores</h2>
+    <ol id="highScoresList"></ol>
+    <button id="backToMenuButton">Back to Menu</button>
   </div>
 
-  <div id="scoreDisplay" class="score">Score: 0</div>
-  <script type="module" src="src/main.js"></script>
+  <script type="module" src="/src/main.js"></script>
 </body>
 </html>

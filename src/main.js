@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 // Game state
 let gameState = {
@@ -25,6 +26,17 @@ camera.lookAt(0, 0, 0);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
+// Add orbit controls
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.rotateSpeed = 0.5;
+controls.enablePan = false;
+controls.minDistance = 5;
+controls.maxDistance = 20;
+controls.minPolarAngle = Math.PI / 4;
+controls.maxPolarAngle = Math.PI / 2;
 
 // UI Elements
 const titleScreen = document.getElementById('titleScreen');
@@ -622,6 +634,7 @@ const animate = () => {
     requestAnimationFrame(animate);
 
     if (!gameState.isGameStarted || gameState.isGameOver) {
+        controls.update();
         renderer.render(scene, camera);
         return;
     }
@@ -632,23 +645,38 @@ const animate = () => {
 
     // Update trick animation
     if (currentTrick && !isGrounded) {
-        const airTime = Math.abs(2 * JUMP_FORCE / GRAVITY); // Calculate total air time
-        const rotationSpeed = currentTrick.rotation.speed / airTime; // Distribute rotation over air time
-        trickRotation += rotationSpeed;
+        const airTime = Math.abs(2 * JUMP_FORCE / GRAVITY);
         
-        // Apply rotation based on trick type
-        if (currentTrick.rotation.axis === 'z') {
-            player.skateboard.rotation.z = trickRotation;
-        } else if (currentTrick.rotation.axis === 'y') {
+        if (currentTrick.name === '360 FLIP') {
+            // Handle combined rotations for 360 flip
+            const primarySpeed = currentTrick.rotation.primary.speed / airTime;
+            const secondarySpeed = currentTrick.rotation.secondary.speed / airTime;
+            
+            trickRotation += primarySpeed;
+            secondaryRotation += secondarySpeed;
+            
             player.skateboard.rotation.y = trickRotation;
+            player.skateboard.rotation.x = secondaryRotation;
         } else {
-            player.skateboard.rotation.x = trickRotation;
+            // Handle single-axis rotations for other tricks
+            const rotationSpeed = currentTrick.rotation.speed / airTime;
+            trickRotation += rotationSpeed;
+            
+            if (currentTrick.rotation.axis === 'z') {
+                player.skateboard.rotation.z = trickRotation;
+            } else if (currentTrick.rotation.axis === 'x') {
+                player.skateboard.rotation.x = trickRotation;
+            } else if (currentTrick.rotation.axis === 'y') {
+                player.skateboard.rotation.y = trickRotation;
+            }
         }
         
         // Reset trick when landing
         if (player.position.y <= 1) {
             player.skateboard.rotation.set(0, 0, 0);
             currentTrick = null;
+            trickRotation = 0;
+            secondaryRotation = 0;
         }
     }
 
@@ -784,16 +812,15 @@ const animate = () => {
     scoreDisplay.textContent = `Score: ${Math.floor(gameState.score)}`;
     carsAvoidedDisplay.textContent = `Cars Avoided: ${gameState.carsAvoided}`;
 
-    // Update camera
-    camera.position.x = player.position.x - 5;
-    camera.position.y = player.position.y + 5;
-    camera.position.z = 10;
-    camera.lookAt(player.position);
-
-    // Update car speed based on score
-    const scoreMultiplier = Math.floor(gameState.score / 1000); // Increase speed every 1000 points
-    const currentCarSpeed = gameState.baseCarSpeed * (1 + scoreMultiplier * 0.1); // 10% faster per 1000 points
-
+    // Update camera to follow player while maintaining orbit controls
+    const targetPosition = new THREE.Vector3();
+    player.getWorldPosition(targetPosition);
+    controls.target.copy(targetPosition);
+    
+    // Update controls before rendering
+    controls.update();
+    
+    // Render the scene
     renderer.render(scene, camera);
 };
 
@@ -824,14 +851,21 @@ const showTrickName = (trickName) => {
 
 // Skateboard trick constants
 const TRICKS = {
-    KICKFLIP: { name: 'KICKFLIP', rotation: { axis: 'z', speed: Math.PI * 2 }},
-    HEELFLIP: { name: 'HEELFLIP', rotation: { axis: 'z', speed: -Math.PI * 2 }},
-    THREESIXTY: { name: '360 FLIP', rotation: { axis: 'y', speed: Math.PI * 2 }},
-    IMPOSSIBLE: { name: 'IMPOSSIBLE', rotation: { axis: 'x', speed: Math.PI * 2 }}
+    KICKFLIP: { name: 'KICKFLIP', rotation: { axis: 'x', speed: Math.PI * 2 }},
+    HEELFLIP: { name: 'HEELFLIP', rotation: { axis: 'x', speed: -Math.PI * 2 }},
+    THREESIXTY: { 
+        name: '360 FLIP', 
+        rotation: { 
+            primary: { axis: 'y', speed: Math.PI * 2 },     // 360 shuv-it
+            secondary: { axis: 'x', speed: -Math.PI * 2 }    // heelflip motion (inverted)
+        }
+    },
+    IMPOSSIBLE: { name: 'IMPOSSIBLE', rotation: { axis: 'z', speed: Math.PI * 2 }}
 };
 
 let currentTrick = null;
 let trickRotation = 0;
+let secondaryRotation = 0;  // For tricks with multiple rotations
 
 // Modified jump function with tricks
 const jump = () => {
@@ -843,6 +877,7 @@ const jump = () => {
         const trickKeys = Object.keys(TRICKS);
         currentTrick = TRICKS[trickKeys[Math.floor(Math.random() * trickKeys.length)]];
         trickRotation = 0;
+        secondaryRotation = 0;
         showTrickName(currentTrick.name);
     }
 };
@@ -879,6 +914,7 @@ window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    controls.update(); // Update controls when window is resized
 });
 
 // Obstacles pool
